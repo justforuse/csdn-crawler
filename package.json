@@ -1,0 +1,17 @@
+{
+  "name": "csdn-scrapy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "node-fetch": "^2.4.0",
+    "request": "^2.88.0"
+  }
+}
