@@ -1,72 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Document</title>
-    <!-- 引入样式 -->
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
-    <!-- 引入组件库 -->
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-  </head>
-  <body>
-    <h1 align="center">CSDN 博客统计</h1>
-    <div id="app">
-      <el-form ref="formRef" :model="form" :rules="rules" :inline="true" size="small">
-        <el-form-item label="用户ID" prop="userId">
-          <el-input v-model="form.userId"></el-input>
-        </el-form-item>
-        <el-form-item label="总页数" prop="endPageNum">
-          <el-input v-model="form.endPageNum"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
-        </el-form-item>
-      </el-form>
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="title" label="标题"> </el-table-column>
-        <el-table-column prop="count" label="阅读量" width="180" sortable>
-        </el-table-column>
-      </el-table>
-    </div>
-    <script>
-      new Vue({
-        el: '#app',
-        data: {
-          form: {
-            userId: ''
-          },
-          rules: {
-            userId: [
-              {
-                required: true,
-                message: '请输入用户ID',
-                trigger: ['blur', 'change']
-              }
-            ]
-          },
-          tableData: []
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Document</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui@2.6.3/lib/theme-chalk/index.css" />
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+  <!-- 引入组件库 -->
+  <script src="https://unpkg.com/element-ui@2.6.3/lib/index.js"></script>
+</head>
+
+<body>
+  <h1 align="center">CSDN 博客统计</h1>
+  <div id="app">
+    <el-form ref="formRef" :model="form" :rules="rules" :inline="true" size="small">
+      <el-form-item label="用户ID" prop="userId">
+        <el-input v-model="form.userId" placeholder="必填" clearable></el-input>
+      </el-form-item>
+      <el-form-item label="总页数" prop="endPageNum">
+        <el-input v-model="form.pageNum" placeholder="每页20调，默认10页"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="handleSearch" :loading="isLoading">查询</el-button>
+      </el-form-item>
+    </el-form>
+    <p>查询到{{ total }}条数据</p>
+    <el-table :data="tableData" style="width: 100%" v-loading="isLoading" max-height="400">
+      <el-table-column prop="title" label="标题"></el-table-column>
+      <el-table-column prop="count" label="阅读量" width="180" sortable></el-table-column>
+    </el-table>
+  </div>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        isLoading: false,
+        form: {
+          userId: '',
+          pageNum: ''
         },
-        methods: {
-          handleSearch() {
-            this.$refs.formRef.validate(isValid => {
-              if (isValid) {
-                fetch(`/info?userId=${this.form.userId}`)
-                  .then(res => res.json())
-                  .then(data => {
-                    console.log(data)
-                    this.tableData = data.data
-                  })
-              }
-            })
-          }
+        rules: {
+          userId: [
+            {
+              required: true,
+              message: '请输入用户ID',
+              trigger: ['blur', 'change']
+            }
+          ]
+        },
+        total: 0,
+        tableData: []
+      },
+      methods: {
+        handleSearch() {
+          this.$refs.formRef.validate(isValid => {
+            if (isValid) {
+              this.isLoading = true
+              fetch(`/info?userId=${this.form.userId}&pageNum=${this.form.pageNum}`)
+                .then(res => res.json())
+                .then(data => {
+                  this.total = data.total
+                  this.tableData = data.data
+                })
+                .finally(() => {
+                  this.isLoading = false
+                })
+            }
+          })
         }
-      })
-    </script>
-  </body>
+      }
+    })
+  </script>
+</body>
+
 </html>

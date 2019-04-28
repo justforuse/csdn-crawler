@@ -40,19 +40,19 @@ app.get('/info', (req, res) => {
       console.log('Error')
     }
   }
-
-  const pages = [...new Array(12).keys()].map(i => i + 1)
+  const pageLength = +req.query.pageNum || 10
+  const pages = [...new Array(pageLength).keys()].map(i => i + 1)
   async function processArray(array) {
     for (const item of array) {
       await getInfo(item)
     }
     console.log('Done!')
-    // console.log(result.length)
     res.set({
       "Access-Control-Allow-Origin" : "*"
     })
     res.json({
       code: 200,
+      total: result.length,
       data: result
     })
   }
@@ -60,4 +60,4 @@ app.get('/info', (req, res) => {
   processArray(pages)
 })
 
-app.listen(PORT, () => console.log('Example app listening on port 3000!'))
+app.listen(PORT, () => console.log(`Example app listening on port ${PORT}!`))
