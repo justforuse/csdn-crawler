@@ -81,7 +81,9 @@ app.get('/', function (req, res) {
 });
 app.get('/info', function (req, res) {
     console.log("Request IP address is " + req.clientIp);
-    if (!req.clientIp.includes('185.199.111.153') && !req.clientIp.includes('127.0.0.1')) {
+    console.log("Request host is " + req.get('host'));
+    if (!req.get('host').includes('justforuse.github.io') &&
+        !req.clientIp.includes('127.0.0.1')) {
         console.log('IP Error');
         res.status(401).json({
             code: 401,
@@ -174,7 +176,7 @@ app.get('/info', function (req, res) {
                     case 7:
                         console.log("Done, Fetch " + result.length + " posts");
                         res.set({
-                            "Access-Control-Allow-Origin": "*"
+                            'Access-Control-Allow-Origin': '*'
                         });
                         res.json({
                             code: 200,

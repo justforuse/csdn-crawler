@@ -1,26 +1,29 @@
 const nodeFetch = require('node-fetch')
-const path = require('path');
+const path = require('path')
 const express = require('express')
 const requestIp = require('request-ip')
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5001
 
 class BlogInfo {
-  title: string;
-  count: number;
+  title: string
+  count: number
 }
 
 const app = express()
 app.use(requestIp.mw())
 app.get('/', (req, res) => {
   console.log(req.clientIp)
-  res.sendFile(path.join(__dirname+'/index.html'))
+  res.sendFile(path.join(__dirname + '/index.html'))
 })
 
 app.get('/info', (req, res) => {
-
-  console.log(`Request IP address is ${req.clientIp}`);
-  if(!req.clientIp.includes('185.199.111.153') && !req.clientIp.includes('127.0.0.1')) {
-    console.log('IP Error');
+  console.log(`Request IP address is ${req.clientIp}`)
+  console.log(`Request host is ${req.get('host')}`)
+  if (
+    !req.get('host').includes('justforuse.github.io') &&
+    !req.clientIp.includes('127.0.0.1')
+  ) {
+    console.log('IP Error')
     res.status(401).json({
       code: 401,
       data: 'Not allowed IP address'
@@ -38,11 +41,11 @@ app.get('/info', (req, res) => {
     '<span class="read-num">阅读数 <span class="num">(.*?)</span> </span>',
     'g'
   )
-  
+
   let hasData = true
-  let result:Array<BlogInfo> = []
-  async function getInfo(i:number) {
-    if(!hasData) {
+  let result: Array<BlogInfo> = []
+  async function getInfo(i: number) {
+    if (!hasData) {
       return
     }
     let response
@@ -52,8 +55,8 @@ app.get('/info', (req, res) => {
       const body = await response.text()
       const titles = body.match(titleRegx)
       const visits = body.match(regx)
-      if(titles) {
-        let pageData:Array<BlogInfo> = titles.map((title, i) => {
+      if (titles) {
+        let pageData: Array<BlogInfo> = titles.map((title, i) => {
           return {
             title: title.substring(63, title.length - 5).trim(),
             count: +visits[i].match(/\d+/)[0]
@@ -76,7 +79,7 @@ app.get('/info', (req, res) => {
     }
     console.log(`Done, Fetch ${result.length} posts`)
     res.set({
-      "Access-Control-Allow-Origin" : "*"
+      'Access-Control-Allow-Origin': '*'
     })
     res.json({
       code: 200,
