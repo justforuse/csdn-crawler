@@ -60,7 +60,7 @@
           this.$refs.formRef.validate(isValid => {
             if (isValid) {
               this.isLoading = true
-              fetch(`/info?userId=${this.form.userId}&pageNum=${this.form.pageNum}`)
+              fetch(`http://www.codog.com.cn:5000/info?userId=${this.form.userId}&pageNum=${this.form.pageNum}`)
                 .then(res => res.json())
                 .then(data => {
                   this.total = data.total

@@ -1,14 +1,27 @@
 const fetch = require('node-fetch')
 const path = require('path');
 const express = require('express')
-const PORT = process.env.PORT || 5000;
+const requestIp = require('request-ip')
+const PORT = process.env.PORT || 5001;
 const app = express()
-
+app.use(requestIp.mw())
 app.get('/', (req, res) => {
+  console.log(req.clientIp)
   res.sendFile(path.join(__dirname+'/index.html'))
 })
 
 app.get('/info', (req, res) => {
+
+  console.log(req.clientIp);
+  if(!req.clientIp.includes('185.199.111.153') && !req.clientIp.includes('127.0.0.1')) {
+    console.log('IP Error');
+    res.status(401).json({
+      code: 401,
+      data: 'Not allowed IP address'
+    })
+    return
+  }
+
   console.log(req.query.userId)
   const url = `https://blog.csdn.net/${req.query.userId}/article/list/`
   const titleRegx = new RegExp(
