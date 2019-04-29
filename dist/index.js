@@ -82,15 +82,17 @@ app.get('/', function (req, res) {
 app.get('/info', function (req, res) {
     console.log("Request IP address is " + req.clientIp);
     console.log("Request host is " + req.get('host'));
-    if (!req.get('host').includes('justforuse.github.io') &&
-        !req.clientIp.includes('127.0.0.1')) {
-        console.log('IP Error');
-        res.status(401).json({
-            code: 401,
-            data: 'Not allowed IP address'
-        });
-        return;
-    }
+    // if (
+    //   !req.get('host').includes('justforuse.github.io') &&
+    //   !req.clientIp.includes('127.0.0.1')
+    // ) {
+    //   console.log('IP Error')
+    //   res.status(401).json({
+    //     code: 401,
+    //     data: 'Not allowed IP address'
+    //   })
+    //   return
+    // }
     console.log("Request userId is " + req.query.userId);
     var url = "https://blog.csdn.net/" + req.query.userId + "/article/list/";
     var titleRegx = new RegExp('<span class="article-type type-.*?">\n.*?</span>\n(.*?)</a>', 'g');
