@@ -1,8 +1,14 @@
-const fetch = require('node-fetch')
+const nodeFetch = require('node-fetch')
 const path = require('path');
 const express = require('express')
 const requestIp = require('request-ip')
 const PORT = process.env.PORT || 5001;
+
+class BlogInfo {
+  title: string;
+  count: number;
+}
+
 const app = express()
 app.use(requestIp.mw())
 app.get('/', (req, res) => {
@@ -12,7 +18,7 @@ app.get('/', (req, res) => {
 
 app.get('/info', (req, res) => {
 
-  console.log(req.clientIp);
+  console.log(`Request IP address is ${req.clientIp}`);
   if(!req.clientIp.includes('185.199.111.153') && !req.clientIp.includes('127.0.0.1')) {
     console.log('IP Error');
     res.status(401).json({
@@ -22,7 +28,7 @@ app.get('/info', (req, res) => {
     return
   }
 
-  console.log(req.query.userId)
+  console.log(`Request userId is ${req.query.userId}`)
   const url = `https://blog.csdn.net/${req.query.userId}/article/list/`
   const titleRegx = new RegExp(
     '<span class="article-type type-.*?">\n.*?</span>\n(.*?)</a>',
@@ -32,25 +38,34 @@ app.get('/info', (req, res) => {
     '<span class="read-num">阅读数 <span class="num">(.*?)</span> </span>',
     'g'
   )
-
-  let result = []
-  async function getInfo(i) {
+  
+  let hasData = true
+  let result:Array<BlogInfo> = []
+  async function getInfo(i:number) {
+    if(!hasData) {
+      return
+    }
     let response
     try {
-      response = await fetch(url + i)
+      console.log(`Fetching page ${i}`)
+      response = await nodeFetch(url + i)
       const body = await response.text()
       const titles = body.match(titleRegx)
       const visits = body.match(regx)
-      let pageData = titles.map((title, i) => {
-        return {
-          title: title.substring(63, title.length - 5).trim(),
-          count: +visits[i].match(/\d+/)[0]
-        }
-      })
-      result = [...result, ...pageData]
-      // console.log(pageData)
+      if(titles) {
+        let pageData:Array<BlogInfo> = titles.map((title, i) => {
+          return {
+            title: title.substring(63, title.length - 5).trim(),
+            count: +visits[i].match(/\d+/)[0]
+          }
+        })
+        result = [...result, ...pageData]
+      } else {
+        // null data, break
+        hasData = false
+      }
     } catch (err) {
-      console.log('Error')
+      console.log('Error', err.message)
     }
   }
   const pageLength = +req.query.pageNum || 10
@@ -59,7 +74,7 @@ app.get('/info', (req, res) => {
     for (const item of array) {
       await getInfo(item)
     }
-    console.log('Done!')
+    console.log(`Done, Fetch ${result.length} posts`)
     res.set({
       "Access-Control-Allow-Origin" : "*"
     })

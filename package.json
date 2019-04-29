@@ -2,9 +2,12 @@
   "name": "csdn-scrapy",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node main.js"
+    "dist": "tsc -w && cp index.html dist/",
+    "dist:watch": "tsc -w && cp index.html dist/",
+    "dev": "nodemon .",
+    "start": "node ."
   },
   "keywords": [],
   "author": "",
@@ -13,5 +16,10 @@
     "express": "^4.16.4",
     "node-fetch": "^2.4.0",
     "request-ip": "^2.1.3"
+  },
+  "devDependencies": {
+    "@types/node": "^11.13.8",
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.5"
   }
 }
