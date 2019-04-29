@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "dist": "tsc -w && cp index.html dist/",
+    "dist": "tsc && cp index.html dist/",
     "dist:watch": "tsc -w && cp index.html dist/",
     "dev": "nodemon .",
     "start": "node ."
